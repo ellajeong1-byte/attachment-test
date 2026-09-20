@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { loveT, loveQuestions, loveQuestionsSingle, loveResults, loveAskSingle, computeLoveRanking, loveColors } from './loveLanguage';
 
 const LANG_OPTIONS = [
   { code: 'ko', label: '한국어', flag: '🇰🇷' },
@@ -478,16 +479,22 @@ const LOVE_RESET_URL = 'https://payhip.com/b/uWMgQ';
 // ─── Component ───
 export default function AttachmentQuiz() {
   const [lang, setLang] = useState('ko');
-  const [screen, setScreen] = useState('welcome');
+  const [testType, setTestType] = useState('attachment');
+  const [relationshipStatus, setRelationshipStatus] = useState('couple');
+  const [screen, setScreen] = useState('home');
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [resultKey, setResultKey] = useState('secure');
+  const [secondaryKey, setSecondaryKey] = useState(null);
   const [showCopied, setShowCopied] = useState(false);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [fadeIn, setFadeIn] = useState(true);
+  const isLove = testType === 'love';
+  const isSingle = relationshipStatus === 'single';
   const t = T[lang];
-  const qs = questions[lang];
-  const res = results[lang];
+  const lt = loveT[lang];
+  const qs = isLove ? (isSingle ? loveQuestionsSingle[lang] : loveQuestions[lang]) : questions[lang];
+  const res = isLove ? loveResults[lang] : results[lang];
 
   const typeColors = {
     secure: { bg: 'from-emerald-50 to-teal-50', accent: '#059669', light: '#d1fae5', card: 'border-emerald-200' },
@@ -505,8 +512,13 @@ export default function AttachmentQuiz() {
     const newAnswers = [...answers, idx];
     setAnswers(newAnswers);
     if (newAnswers.length >= qs.length) {
-      const rk = computeResult(newAnswers, qs);
-      transition(() => { setResultKey(rk); setScreen('result'); });
+      if (isLove) {
+        const ranking = computeLoveRanking(newAnswers, qs);
+        transition(() => { setResultKey(ranking[0]); setSecondaryKey(ranking[1]); setScreen('result'); });
+      } else {
+        const rk = computeResult(newAnswers, qs);
+        transition(() => { setResultKey(rk); setScreen('result'); });
+      }
     } else {
       transition(() => setCurrentQ(currentQ + 1));
     }
@@ -518,7 +530,13 @@ export default function AttachmentQuiz() {
     }
   };
 
-  const restart = () => { transition(() => { setScreen('welcome'); setCurrentQ(0); setAnswers([]); }); };
+  const restart = () => { transition(() => { setScreen('home'); setCurrentQ(0); setAnswers([]); }); };
+
+  const startTest = (type) => { setTestType(type); transition(() => { setCurrentQ(0); setAnswers([]); setScreen('quiz'); }); };
+
+  const openLoveIntro = () => { setTestType('love'); transition(() => { setScreen('loveIntro'); }); };
+
+  const startLove = (status) => { setTestType('love'); setRelationshipStatus(status); transition(() => { setCurrentQ(0); setAnswers([]); setScreen('quiz'); }); };
 
   const share = async () => {
     try { await navigator.clipboard.writeText(window.location.href); setShowCopied(true); setTimeout(() => setShowCopied(false), 2000); } catch { }
@@ -558,7 +576,13 @@ export default function AttachmentQuiz() {
   }, [showPayhipEmbed, payhipEmbedKey, resultKey]);
 
   const info = res[resultKey];
-  const colors = typeColors[resultKey] || typeColors.secure;
+  const colors = (isLove ? loveColors[resultKey] : typeColors[resultKey]) || typeColors.secure;
+  const secLabels = isLove
+    ? { your: lt.yourLove, a: lt.feelLabel, b: lt.missLabel, c: isSingle ? lt.askLabelSingle : lt.askLabel }
+    : { your: t.yourType, a: t.strengths, b: t.traps, c: t.practices };
+  const secData = isLove
+    ? { a: info?.feel, b: info?.miss, c: isSingle ? (loveAskSingle[lang][resultKey] || info?.ask) : info?.ask }
+    : { a: info?.strengths, b: info?.traps, c: info?.practices };
 
   // ─── Styles ───
   const fontLink = "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap";
@@ -578,10 +602,19 @@ export default function AttachmentQuiz() {
 
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
 
+        {/* ─── Brand Bar ─── */}
+        <header className="sticky top-0 z-40 bg-white/70 backdrop-blur border-b border-rose-100/70">
+          <div className="max-w-lg mx-auto px-5 h-12 flex items-center justify-center">
+            <button onClick={() => { if (screen !== 'home') restart(); }} className="select-none" aria-label="HEART LAB home">
+              <span className="font-display text-base font-bold tracking-[0.2em] text-rose-500">HEART LAB</span>
+            </button>
+          </div>
+        </header>
+
         {/* Language Selector */}
-        <div className="fixed top-4 right-4 z-50 flex gap-1 bg-white/80 backdrop-blur rounded-full px-2 py-1 shadow-sm">
+        <div className="fixed top-2.5 right-4 z-50 flex gap-1 bg-white/80 backdrop-blur rounded-full px-2 py-1 shadow-sm">
           {LANG_OPTIONS.map(l => (
-            <button key={l.code} onClick={() => { setLang(l.code); if (screen !== 'welcome') restart(); }}
+            <button key={l.code} onClick={() => { setLang(l.code); if (screen !== 'home') restart(); }}
               className={`text-xs px-2 py-1 rounded-full transition-all ${lang === l.code ? 'bg-rose-100 text-rose-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>
               {l.flag}
             </button>
@@ -590,17 +623,71 @@ export default function AttachmentQuiz() {
 
         <div className={`max-w-lg mx-auto px-5 py-12 ${fadeIn ? 'fade-enter' : 'fade-exit'}`}>
 
-          {/* ═══ WELCOME ═══ */}
-          {screen === 'welcome' && (
-            <div className="text-center pt-20">
-              <div className="float text-6xl mb-8">💕</div>
-              <h1 className="font-display text-4xl font-bold text-gray-800 mb-3 leading-tight whitespace-pre-line">{t.discover}</h1>
-              <p className="text-rose-400 font-medium mb-6">{t.subtitle}</p>
-              <p className="text-gray-500 text-sm leading-relaxed mb-12 whitespace-pre-line">{t.description}</p>
-              <button onClick={() => transition(() => setScreen('quiz'))}
-                className="bg-gradient-to-r from-rose-400 to-pink-400 text-white px-10 py-4 rounded-full text-lg font-medium shadow-lg shadow-rose-200/50 hover:shadow-xl hover:shadow-rose-300/50 hover:-translate-y-0.5 transition-all active:scale-95">
-                {t.start}
-              </button>
+          {/* ═══ HOME (테스트 선택) ═══ */}
+          {screen === 'home' && (
+            <div className="text-center pt-16">
+              <div className="float text-6xl mb-6">💕</div>
+              <h1 className="font-display text-3xl font-bold text-gray-800 mb-2 leading-tight whitespace-pre-line">{lt.homeHeading}</h1>
+              <p className="text-rose-400 font-medium mb-10">{lt.homeSub}</p>
+
+              <div className="space-y-4">
+                {/* 애착유형 테스트 카드 */}
+                <button onClick={() => startTest('attachment')}
+                  className="w-full text-left p-6 bg-white/80 backdrop-blur rounded-3xl shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 border border-transparent hover:border-rose-200 active:scale-[0.99]">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl shrink-0">{lt.pickAttachEmoji}</span>
+                    <div>
+                      <h2 className="font-display text-lg font-bold text-gray-800 leading-tight whitespace-pre-line">{lt.pickAttachTitle}</h2>
+                      <p className="text-xs text-gray-500 mt-1 whitespace-pre-line">{lt.pickAttachDesc}</p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* 러브랭귀지 테스트 카드 */}
+                <button onClick={openLoveIntro}
+                  className="w-full text-left p-6 bg-white/80 backdrop-blur rounded-3xl shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 border border-transparent hover:border-rose-200 active:scale-[0.99]">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl shrink-0">{lt.pickLoveEmoji}</span>
+                    <div>
+                      <h2 className="font-display text-lg font-bold text-gray-800 leading-tight whitespace-pre-line">{lt.pickLoveTitle}</h2>
+                      <p className="text-xs text-gray-500 mt-1 whitespace-pre-line">{lt.pickLoveDesc}</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ═══ LOVE INTRO (커플/싱글 분기) ═══ */}
+          {screen === 'loveIntro' && (
+            <div className="pt-16">
+              <div className="text-center mb-8">
+                <span className="inline-block text-xs font-medium text-rose-500 bg-rose-100/70 rounded-full px-3 py-1 mb-4">{lt.introBadge}</span>
+                <h1 className="font-display text-3xl font-bold text-gray-800 mb-2 leading-tight whitespace-pre-line">{lt.introQ}</h1>
+                <p className="text-gray-500 text-sm">{lt.introHint}</p>
+              </div>
+              <div className="space-y-4">
+                <button onClick={() => startLove('couple')}
+                  className="w-full text-left p-5 bg-white/80 backdrop-blur rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-transparent hover:border-rose-200 active:scale-[0.99]">
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl shrink-0">💞</span>
+                    <div>
+                      <p className="font-semibold text-gray-800">{lt.introCouple}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{lt.introCoupleSub}</p>
+                    </div>
+                  </div>
+                </button>
+                <button onClick={() => startLove('single')}
+                  className="w-full text-left p-5 bg-white/80 backdrop-blur rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-transparent hover:border-rose-200 active:scale-[0.99]">
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl shrink-0">🌷</span>
+                    <div>
+                      <p className="font-semibold text-gray-800">{lt.introSingle}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{lt.introSingleSub}</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
             </div>
           )}
 
@@ -620,7 +707,7 @@ export default function AttachmentQuiz() {
                 <div className="h-full bg-gradient-to-r from-rose-300 to-pink-400 rounded-full transition-all duration-500" style={{ width: `${((currentQ + 1) / qs.length) * 100}%` }} />
               </div>
 
-              <h2 className="text-xl font-semibold text-gray-800 mb-8 leading-relaxed">{qs[currentQ].q}</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-8 leading-relaxed">{isLove ? lt.pairPrompt : qs[currentQ].q}</h2>
 
               <div className="space-y-3">
                 {qs[currentQ].options.map((opt, idx) => (
@@ -638,16 +725,22 @@ export default function AttachmentQuiz() {
             <div>
               {/* Type Badge */}
               <div className="text-center mb-8 pt-8">
-                <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">{t.yourType}</p>
+                <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">{secLabels.your}</p>
                 <h1 className="font-display text-3xl font-bold text-gray-800 mb-2">{info.title}</h1>
                 <p className="text-gray-500 text-sm">{info.summary}</p>
+                {isLove && secondaryKey && res[secondaryKey] && (
+                  <p className="text-xs mt-3">
+                    <span className="text-gray-400">{lt.secondaryLabel} · </span>
+                    <span className="font-medium" style={{ color: (loveColors[secondaryKey] || {}).accent }}>{res[secondaryKey].title}</span>
+                  </p>
+                )}
               </div>
 
               {/* Strengths */}
               <div className={`bg-gradient-to-br ${colors.bg} rounded-2xl p-6 mb-4`}>
-                <h3 className="text-sm font-bold text-gray-700 mb-3">{t.strengths}</h3>
+                <h3 className="text-sm font-bold text-gray-700 mb-3">{secLabels.a}</h3>
                 <div className="flex flex-wrap gap-2">
-                  {info.strengths.map((s, i) => (
+                  {secData.a.map((s, i) => (
                     <span key={i} className="bg-white/70 text-gray-600 text-xs px-3 py-1.5 rounded-full">{s}</span>
                   ))}
                 </div>
@@ -655,9 +748,9 @@ export default function AttachmentQuiz() {
 
               {/* Traps */}
               <div className="bg-white/60 backdrop-blur rounded-2xl p-6 mb-4 border border-gray-100">
-                <h3 className="text-sm font-bold text-gray-700 mb-3">{t.traps}</h3>
+                <h3 className="text-sm font-bold text-gray-700 mb-3">{secLabels.b}</h3>
                 <div className="space-y-2">
-                  {info.traps.map((tr, i) => (
+                  {secData.b.map((tr, i) => (
                     <p key={i} className="text-xs text-gray-600 leading-relaxed pl-4 border-l-2" style={{ borderColor: colors.accent + '40' }}>{tr}</p>
                   ))}
                 </div>
@@ -665,9 +758,9 @@ export default function AttachmentQuiz() {
 
               {/* Practices */}
               <div className="bg-white/60 backdrop-blur rounded-2xl p-6 mb-8 border border-gray-100">
-                <h3 className="text-sm font-bold text-gray-700 mb-3">{t.practices}</h3>
+                <h3 className="text-sm font-bold text-gray-700 mb-3">{secLabels.c}</h3>
                 <div className="space-y-2">
-                  {info.practices.map((pr, i) => (
+                  {secData.c.map((pr, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <span className="text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 mt-0.5" style={{ background: colors.light, color: colors.accent }}>{i + 1}</span>
                       <p className="text-xs text-gray-600 leading-relaxed">{pr}</p>
@@ -726,7 +819,7 @@ export default function AttachmentQuiz() {
                 <button onClick={() => setShowComingSoon(true)}
                   className="w-full py-3 rounded-xl font-medium text-sm border-2 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                   style={{ borderColor: colors.accent, color: colors.accent }}>
-                  {info.workbook.cta}
+                  {isLove ? lt.typeCta : info.workbook.cta}
                 </button>
               </div>
 
