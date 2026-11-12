@@ -10,22 +10,25 @@ const LANG_OPTIONS = [
   { code: 'zh', label: '中文' },
 ];
 
+// 모든 결과에 동일한 채도 낮은 더스티 핑크 톤 적용
+const blushScheme = { bg: 'from-[#F6E9EB] to-[#F3EEEC]', accent: '#99606C', light: '#F2E2E5', card: 'border-[#E7D5D8]' };
+
 const typeColors = {
-  secure:  { bg: 'from-emerald-50/50 to-teal-50/30', accent: '#3D6B5A', light: '#E8F0EC', card: 'border-emerald-200/50' },
-  anxious: { bg: 'from-amber-50/50 to-orange-50/30', accent: '#B87A3A', light: '#FDF0E0', card: 'border-amber-200/50' },
-  avoidant: { bg: 'from-slate-100/50 to-blue-50/30', accent: '#4A6B9B', light: '#E4ECF4', card: 'border-slate-200/50' },
-  fearful: { bg: 'from-purple-50/40 to-violet-50/30', accent: '#6B4FA0', light: '#EDE6F6', card: 'border-purple-200/50' },
-  anxious_avoidant: { bg: 'from-amber-50/40 to-slate-50/30', accent: '#8B6B3A', light: '#F5EDE0', card: 'border-amber-200/50' },
-  anxious_fearful: { bg: 'from-amber-50/40 to-purple-50/30', accent: '#7B4F8A', light: '#F0E6F4', card: 'border-purple-200/50' },
-  avoidant_fearful: { bg: 'from-slate-50/40 to-purple-50/30', accent: '#5A4F85', light: '#E8E4F0', card: 'border-violet-200/50' },
+  secure: blushScheme,
+  anxious: blushScheme,
+  avoidant: blushScheme,
+  fearful: blushScheme,
+  anxious_avoidant: blushScheme,
+  anxious_fearful: blushScheme,
+  avoidant_fearful: blushScheme,
 };
 
 const premiumLoveColors = {
-  words: { bg: 'from-rose-50/40 to-pink-50/20', accent: '#9B4F5A', light: '#F5E0E4', card: 'border-rose-200/40' },
-  time:  { bg: 'from-violet-50/40 to-purple-50/20', accent: '#6B4FA0', light: '#EDE6F6', card: 'border-violet-200/40' },
-  gifts: { bg: 'from-amber-50/40 to-yellow-50/20', accent: '#9B7D3A', light: '#F5EBD0', card: 'border-amber-200/40' },
-  acts:  { bg: 'from-emerald-50/40 to-teal-50/20', accent: '#3D6B5A', light: '#E8F0EC', card: 'border-emerald-200/40' },
-  touch: { bg: 'from-sky-50/40 to-blue-50/20', accent: '#3A6B9B', light: '#E0ECF5', card: 'border-sky-200/40' },
+  words: blushScheme,
+  time: blushScheme,
+  gifts: blushScheme,
+  acts: blushScheme,
+  touch: blushScheme,
 };
 
 export default function AttachmentQuiz() {
@@ -133,14 +136,14 @@ export default function AttachmentQuiz() {
         <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur-md">
           <div className="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
             <button onClick={() => { if (screen !== 'home') restart(); }} className="select-none" aria-label="Home">
-              <span className="font-display text-[15px] font-semibold tracking-[0.25em] text-forest">HEART LAB</span>
+              <span className="font-display text-[15px] font-semibold tracking-[0.25em] text-plum">HEART LAB</span>
             </button>
             <div className="flex gap-0.5">
               {LANG_OPTIONS.map(l => (
                 <button key={l.code} onClick={() => { setLang(l.code); if (screen !== 'home') restart(); }}
                   className={`text-[11px] px-2 py-1 rounded-sm transition-all duration-200 ${
                     lang === l.code
-                      ? 'text-forest font-medium bg-forest/5'
+                      ? 'text-plum font-medium bg-plum/5'
                       : 'text-neutral-400 hover:text-neutral-600'
                   }`}>
                   {l.label}
@@ -157,7 +160,7 @@ export default function AttachmentQuiz() {
           {screen === 'home' && (
             <div className="pt-20 pb-8">
               <div className="flex justify-center mb-10">
-                <div className="w-10 h-px bg-gold" />
+                <div className="w-10 h-px bg-blush" />
               </div>
 
               <div className="text-center mb-16">
@@ -171,30 +174,30 @@ export default function AttachmentQuiz() {
 
               <div className="space-y-4">
                 <button onClick={() => startTest('attachment')}
-                  className="group w-full text-left p-7 bg-white rounded-2xl border border-sand hover:border-forest/20 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-0.5">
+                  className="group w-full text-left p-7 bg-white rounded-2xl border border-sand hover:border-plum/20 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-forest/[0.06] flex items-center justify-center shrink-0 group-hover:bg-forest/[0.10] transition-colors duration-300">
-                      <Heart size={21} strokeWidth={1.4} className="text-forest" />
+                    <div className="w-12 h-12 rounded-xl bg-plum/[0.06] flex items-center justify-center shrink-0 group-hover:bg-plum/[0.10] transition-colors duration-300">
+                      <Heart size={21} strokeWidth={1.4} className="text-plum" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="font-display text-[17px] font-semibold text-charcoal leading-snug whitespace-pre-line">{lt.pickAttachTitle}</h2>
                       <p className="text-[12px] text-neutral-400 mt-1.5 leading-relaxed">{lt.pickAttachDesc}</p>
                     </div>
-                    <ChevronRight size={18} className="text-neutral-300 group-hover:text-forest shrink-0 transition-colors duration-300 group-hover:translate-x-0.5" />
+                    <ChevronRight size={18} className="text-neutral-300 group-hover:text-plum shrink-0 transition-colors duration-300 group-hover:translate-x-0.5" />
                   </div>
                 </button>
 
                 <button onClick={openLoveIntro}
-                  className="group w-full text-left p-7 bg-white rounded-2xl border border-sand hover:border-gold/30 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-0.5">
+                  className="group w-full text-left p-7 bg-white rounded-2xl border border-sand hover:border-blush/30 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-gold/[0.08] flex items-center justify-center shrink-0 group-hover:bg-gold/[0.14] transition-colors duration-300">
-                      <MessageCircle size={21} strokeWidth={1.4} className="text-gold" />
+                    <div className="w-12 h-12 rounded-xl bg-blush/[0.08] flex items-center justify-center shrink-0 group-hover:bg-blush/[0.14] transition-colors duration-300">
+                      <MessageCircle size={21} strokeWidth={1.4} className="text-blush" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="font-display text-[17px] font-semibold text-charcoal leading-snug whitespace-pre-line">{lt.pickLoveTitle}</h2>
                       <p className="text-[12px] text-neutral-400 mt-1.5 leading-relaxed">{lt.pickLoveDesc}</p>
                     </div>
-                    <ChevronRight size={18} className="text-neutral-300 group-hover:text-gold shrink-0 transition-colors duration-300 group-hover:translate-x-0.5" />
+                    <ChevronRight size={18} className="text-neutral-300 group-hover:text-blush shrink-0 transition-colors duration-300 group-hover:translate-x-0.5" />
                   </div>
                 </button>
               </div>
@@ -205,7 +208,7 @@ export default function AttachmentQuiz() {
           {screen === 'loveIntro' && (
             <div className="pt-16">
               <div className="text-center mb-10">
-                <span className="inline-block text-[10px] font-medium text-gold tracking-[0.2em] uppercase mb-5">
+                <span className="inline-block text-[10px] font-medium text-blush tracking-[0.2em] uppercase mb-5">
                   {lt.introBadge}
                 </span>
                 <h1 className="font-display text-[28px] font-medium text-charcoal leading-tight whitespace-pre-line">
@@ -215,10 +218,10 @@ export default function AttachmentQuiz() {
               </div>
               <div className="space-y-3">
                 <button onClick={() => startLove('couple')}
-                  className="group w-full text-left p-6 bg-white rounded-2xl border border-sand hover:border-forest/20 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-0.5">
+                  className="group w-full text-left p-6 bg-white rounded-2xl border border-sand hover:border-plum/20 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-forest/[0.06] flex items-center justify-center shrink-0">
-                      <Users size={18} strokeWidth={1.5} className="text-forest" />
+                    <div className="w-10 h-10 rounded-lg bg-plum/[0.06] flex items-center justify-center shrink-0">
+                      <Users size={18} strokeWidth={1.5} className="text-plum" />
                     </div>
                     <div>
                       <p className="font-medium text-[15px] text-charcoal">{lt.introCouple}</p>
@@ -227,10 +230,10 @@ export default function AttachmentQuiz() {
                   </div>
                 </button>
                 <button onClick={() => startLove('single')}
-                  className="group w-full text-left p-6 bg-white rounded-2xl border border-sand hover:border-gold/25 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-0.5">
+                  className="group w-full text-left p-6 bg-white rounded-2xl border border-sand hover:border-blush/25 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-0.5">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-gold/[0.08] flex items-center justify-center shrink-0">
-                      <User size={18} strokeWidth={1.5} className="text-gold" />
+                    <div className="w-10 h-10 rounded-lg bg-blush/[0.08] flex items-center justify-center shrink-0">
+                      <User size={18} strokeWidth={1.5} className="text-blush" />
                     </div>
                     <div>
                       <p className="font-medium text-[15px] text-charcoal">{lt.introSingle}</p>
@@ -247,7 +250,7 @@ export default function AttachmentQuiz() {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <button onClick={handleBack}
-                  className={`text-neutral-400 hover:text-forest transition-colors ${currentQ === 0 ? 'invisible' : ''}`}>
+                  className={`text-neutral-400 hover:text-plum transition-colors ${currentQ === 0 ? 'invisible' : ''}`}>
                   <ArrowLeft size={20} strokeWidth={1.5} />
                 </button>
                 <span className="text-[12px] text-neutral-400 tracking-wider font-light">
@@ -257,7 +260,7 @@ export default function AttachmentQuiz() {
               </div>
 
               <div className="w-full h-[2px] bg-sand rounded-full mb-10 overflow-hidden">
-                <div className="h-full bg-forest rounded-full transition-all duration-500 ease-out"
+                <div className="h-full bg-plum rounded-full transition-all duration-500 ease-out"
                   style={{ width: `${((currentQ + 1) / qs.length) * 100}%` }} />
               </div>
 
@@ -268,7 +271,7 @@ export default function AttachmentQuiz() {
               <div className="space-y-3">
                 {qs[currentQ].options.map((opt, idx) => (
                   <button key={idx} onClick={() => handleAnswer(idx)}
-                    className="w-full text-left p-5 bg-white rounded-xl border border-sand hover:border-forest/20 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-[0_3px_14px_rgba(0,0,0,0.06)] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.995]">
+                    className="w-full text-left p-5 bg-white rounded-xl border border-sand hover:border-plum/20 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-[0_3px_14px_rgba(0,0,0,0.06)] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.995]">
                     <p className="text-[14px] text-neutral-600 leading-relaxed">{opt.text}</p>
                   </button>
                 ))}
@@ -281,8 +284,8 @@ export default function AttachmentQuiz() {
             <div>
               {/* Type Header */}
               <div className="text-center mb-10 pt-10">
-                <p className="text-[10px] text-gold tracking-[0.25em] uppercase font-medium mb-4">{secLabels.your}</p>
-                <div className="w-8 h-px bg-gold mx-auto mb-6" />
+                <p className="text-[10px] text-blush tracking-[0.25em] uppercase font-medium mb-4">{secLabels.your}</p>
+                <div className="w-8 h-px bg-blush mx-auto mb-6" />
                 <h1 className="font-display text-[30px] font-semibold text-charcoal mb-3">{info.title}</h1>
                 <p className="text-[13px] text-neutral-500 leading-relaxed max-w-xs mx-auto">{info.summary}</p>
                 {isLove && secondaryKey && res[secondaryKey] && (
@@ -334,7 +337,7 @@ export default function AttachmentQuiz() {
               </div>
 
               {/* Love Reset CTA */}
-              <div className="bg-forest rounded-2xl p-7 mb-4 text-white overflow-hidden relative">
+              <div className="bg-plum rounded-2xl p-7 mb-4 text-white overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.03] rounded-full -translate-y-1/2 translate-x-1/2" />
                 <p className="text-[10px] tracking-[0.2em] uppercase text-white/40 mb-2 relative">{t.coupleWorkbook}</p>
                 <h4 className="font-display text-[20px] font-semibold mb-1 relative">{t.loveReset}</h4>
@@ -342,7 +345,7 @@ export default function AttachmentQuiz() {
                 <div className="flex items-center gap-3 mb-5 relative">
                   <span className="text-[13px] text-white/30 line-through">{t.loveResetOriginal}</span>
                   <span className="text-[24px] font-semibold">{t.loveResetSale}</span>
-                  <span className="px-2.5 py-0.5 bg-gold text-white text-[10px] font-semibold rounded tracking-wider">{t.loveResetOff}</span>
+                  <span className="px-2.5 py-0.5 bg-blush text-white text-[10px] font-semibold rounded tracking-wider">{t.loveResetOff}</span>
                 </div>
                 <button onClick={() => {
                     if (showPayhipEmbed) {
@@ -357,7 +360,7 @@ export default function AttachmentQuiz() {
                       }, 2000);
                     }
                   }}
-                  className="relative w-full bg-gold hover:bg-[#A6845E] text-white py-3.5 rounded-xl font-medium text-[14px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2">
+                  className="relative w-full bg-blush hover:bg-[#A9707C] text-white py-3.5 rounded-xl font-medium text-[14px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2">
                   {t.loveResetCta}
                   <ArrowRight size={16} strokeWidth={2} />
                 </button>
@@ -388,7 +391,7 @@ export default function AttachmentQuiz() {
                   {t.retry}
                 </button>
                 <button onClick={share}
-                  className="flex-1 py-3 rounded-xl text-[13px] font-medium text-forest bg-forest/[0.05] border border-forest/10 hover:border-forest/25 transition-all duration-200 flex items-center justify-center gap-2">
+                  className="flex-1 py-3 rounded-xl text-[13px] font-medium text-plum bg-plum/[0.05] border border-plum/10 hover:border-plum/25 transition-all duration-200 flex items-center justify-center gap-2">
                   <Share2 size={14} strokeWidth={1.5} />
                   {t.share}
                 </button>
@@ -410,8 +413,8 @@ export default function AttachmentQuiz() {
             onClick={() => setShowComingSoon(false)}>
             <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-sand/50"
               onClick={e => e.stopPropagation()}>
-              <div className="w-12 h-12 rounded-full bg-forest/[0.06] flex items-center justify-center mx-auto mb-5">
-                <Clock size={22} strokeWidth={1.4} className="text-forest" />
+              <div className="w-12 h-12 rounded-full bg-plum/[0.06] flex items-center justify-center mx-auto mb-5">
+                <Clock size={22} strokeWidth={1.4} className="text-plum" />
               </div>
               <h3 className="font-display text-[20px] font-semibold text-charcoal mb-2">{t.comingSoon}</h3>
               <p className="text-[13px] text-neutral-400 mb-6 whitespace-pre-line leading-relaxed">

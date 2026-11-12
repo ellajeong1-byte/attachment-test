@@ -8,12 +8,12 @@ export default {
     extend: {
       colors: {
         cream: '#FAF8F5',
-        ivory: '#F5F0EB',
-        sand: '#E8E3DD',
-        forest: '#3D4B3D',
-        sage: '#6B8F71',
-        gold: '#B8956A',
-        charcoal: '#2C2C2C',
+        ivory: '#F6EFED',
+        sand: '#EAE0DE',
+        plum: '#6E4A56',
+        sage: '#A8808A',
+        blush: '#C08A94',
+        charcoal: '#2C2626',
       },
       fontFamily: {
         display: ['"Playfair Display"', 'serif'],
